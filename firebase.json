@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "source": "functions"
+  },
+  "hosting": [
+    {
+      "target": "web",
+      "source": "frontend",
+      "frameworksBackend": {
+        "region": "us-central1"
+      }
+    }
+  ]
+}
