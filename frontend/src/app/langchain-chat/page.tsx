@@ -1,17 +1,26 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+import { useSimpleAuth } from '@/components/SimpleAuthProvider';
 import { LangChainChat } from '@/components/LangChainChat';
 import { useLangChainChat } from '@/hooks/useLangChainChat';
 
 export default function LangChainChatPage() {
+  const { user, loading, signOutUser } = useSimpleAuth();
+  const router = useRouter();
   const params = useSearchParams();
   const queryNamespace = params.get('namespace');
   const [namespace, setNamespace] = useState<string | null>(null);
   const { messages, sendMessage, busy, error, references } = useLangChainChat(namespace);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
 
   useEffect(() => {
     if (queryNamespace) {
@@ -25,10 +34,25 @@ export default function LangChainChatPage() {
     }
   }, [queryNamespace]);
 
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+        <p style={{ color: 'white', fontSize: '1.2rem' }}>Loading...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <main className="page-container">
       <nav className="breadcrumb">
         <Link href="/langchain-upload">← Upload Another PDF</Link>
+        <button type="button" onClick={() => signOutUser()} className="logout-btn">
+          Sign Out
+        </button>
       </nav>
 
       <section className="chat-panel">
@@ -53,6 +77,9 @@ export default function LangChainChatPage() {
         .breadcrumb {
           max-width: 960px;
           margin: 0 auto 1rem auto;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
         .breadcrumb a {
           color: white;
@@ -63,6 +90,19 @@ export default function LangChainChatPage() {
         }
         .breadcrumb a:hover {
           opacity: 1;
+        }
+        .logout-btn {
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .logout-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
         }
         .chat-panel {
           width: 100%;

@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
 
 import './globals.css';
-import { AuthProvider } from '@/components/AuthProvider';
+import { SimpleAuthProvider } from '@/components/SimpleAuthProvider';
 
 export const metadata: Metadata = {
-  title: 'Firebase RAG Chatbot',
-  description: 'PDF RAG chatbot powered by Firebase Auth, Cloud Functions, Pinecone, and OpenAI.',
+  title: 'PDF RAG Chatbot',
+  description: 'Upload PDFs, create vector embeddings with Cohere, store in Pinecone, and chat with your documents using RAG.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <SimpleAuthProvider>{children}</SimpleAuthProvider>
       </body>
     </html>
   );
